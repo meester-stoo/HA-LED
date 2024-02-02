@@ -1,0 +1,53 @@
+alias: PRESENCE_Stair lights on Top
+description: Turn the stair lights on when top motions is detected.
+trigger:
+  - platform: state
+    entity_id:
+      - binary_sensor.stair_sensor_top_stair_motion_top
+    to: "on"
+condition:
+  - condition: state
+    entity_id: input_boolean.stair_auto_leds
+    state: "on"
+  - condition: state
+    entity_id: light.stairwell_bannister_light
+    state: "off"
+  - condition: state
+    entity_id: input_boolean.top_stair_sensor_tripped
+    state: "off"
+action:
+  - service: input_boolean.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.top_stair_sensor_tripped
+  - service: light.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.stairwell_bannister_light_main
+  - service: select.select_option
+    metadata: {}
+    data:
+      option: Start Wipe
+    target:
+      entity_id: select.stairwell_bannister_light_preset
+  - service: timer.start
+    metadata: {}
+    data:
+      duration: "00:02:00"
+    target:
+      entity_id: timer.stair_motion_timer
+    enabled: true
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 6
+      milliseconds: 0
+  - service: select.select_option
+    metadata: {}
+    data:
+      option: Solid WW
+    target:
+      entity_id: select.stairwell_bannister_light_preset
+mode: single
