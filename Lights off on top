@@ -1,0 +1,43 @@
+alias: PRESENCE_Stair lights off with top motion
+description: >-
+  Turns the stair lights off when the bottom sensor picks up movement after
+  initial transition
+trigger:
+  - platform: state
+    entity_id:
+      - binary_sensor.stair_sensor_top_stair_motion_top
+    to: "on"
+condition:
+  - condition: state
+    entity_id: light.stairwell_bannister_light
+    state: "on"
+  - condition: state
+    entity_id: input_boolean.stair_auto_leds
+    state: "on"
+  - condition: state
+    entity_id: input_boolean.bottom_stair_sensor_tripped
+    state: "on"
+action:
+  - service: light.turn_on
+    target:
+      entity_id: light.stairwell_bannister_light
+    data:
+      transition: 5
+      brightness: 1
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+    enabled: true
+  - service: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.stairwell_bannister_light
+  - service: input_boolean.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: input_boolean.bottom_stair_sensor_tripped
+mode: single
