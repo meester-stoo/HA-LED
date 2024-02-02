@@ -1,0 +1,41 @@
+alias: Presence. Stair motion cleanup
+description: >-
+  Resets the stair motion triggers after a two minute timer if the light is
+  still on. 
+trigger:
+  - platform: event
+    event_type: timer.finished
+    event_data:
+      entity_id: timer.stair_motion_timer
+    id: Timer finished
+condition:
+  - condition: or
+    conditions:
+      - condition: state
+        entity_id: input_boolean.bottom_stair_sensor_tripped
+        state: "on"
+      - condition: state
+        entity_id: input_boolean.top_stair_sensor_tripped
+        state: "on"
+  - condition: state
+    entity_id: light.stairwell_bannister_light
+    state: "on"
+action:
+  - service: light.turn_on
+    target:
+      entity_id: light.stairwell_bannister_light
+    data:
+      transition: 5
+      brightness: 1
+  - service: light.turn_off
+    target:
+      entity_id: light.stairwell_bannister_light
+    data: {}
+  - service: input_boolean.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+        - input_boolean.bottom_stair_sensor_tripped
+        - input_boolean.top_stair_sensor_tripped
+mode: single
